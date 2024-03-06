@@ -6,16 +6,20 @@
     <title>Login Page</title>
 </head>
 <body>
-    <form onsubmit="loginFormHandler(event)">
+    <form onsubmit="signupFormHandler(event)">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name">
     <label for="email">Email</label>
     <input type="email" name="email" id="email">
+    <label for="phone">Phone Number</label>
+    <input type="number" name="phone" id="phone">
     <label for="password">Password</label>
     <input type="password" name="password" id="password">
     <button type="submit">Send</button>
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="login.js"></script>
+    <script src="signup.js"></script>
 
 </body>
 </html>

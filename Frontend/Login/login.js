@@ -4,22 +4,42 @@ async function loginFormHandler(event) {
     let formValidation = true;
 
     const loginFormData = {
-      name: event.target.name.value,
       email: event.target.email.value,
-      phone: event.target.phone.value,
       password: event.target.password.value,
     };
     formValidation = loginValidationHandler(loginFormData);
     if (formValidation) {
-      const responseData = await axios.post()
+      console.log("skjn");
+      const responseData = await axios.post(
+        "http://localhost:3000/user/login",
+        JSON.stringify(loginFormData),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (responseData.status === 200) {
+        console.log(responseData);
+        const msg = responseData.data.reponseMessage;
+        alert(msg);
+      }
     }
-  } catch (error) {}
+  } catch (error) {
+    if (error.response.status === 404) {
+      alert(error.response.data.reponseMessage);
+    } else if (error.response.status === 500) {
+      alert(error.response.data.reponseMessage);
+    } else {
+      console.log(error);
+    }
+  }
 }
 
-function loginValidationHandler({ name, email, phone, password }) {
-  if (!name || !email || !phone || !password) {
+function loginValidationHandler({ email, password }) {
+  if (!email || !password) {
     return false;
-  }else{
+  } else {
     return true;
   }
 }
