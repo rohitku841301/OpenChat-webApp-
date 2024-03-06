@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql2 = require("mysql2");
 
+const chatRoute = require("./routes/chat")
 const sequelize = require("./database/db");
 const userRoute = require("./routes/user");
 
@@ -16,6 +17,7 @@ app.use(
 );
 
 app.use("/user", userRoute);
+app.use("/chat", chatRoute);
 
 sequelize
   .sync()

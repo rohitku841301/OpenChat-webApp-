@@ -9,7 +9,6 @@ async function loginFormHandler(event) {
     };
     formValidation = loginValidationHandler(loginFormData);
     if (formValidation) {
-      console.log("skjn");
       const responseData = await axios.post(
         "http://localhost:3000/user/login",
         JSON.stringify(loginFormData),
@@ -22,7 +21,9 @@ async function loginFormHandler(event) {
       if (responseData.status === 200) {
         console.log(responseData);
         const msg = responseData.data.reponseMessage;
+        localStorage.setItem("token", responseData.data.token)
         alert(msg);
+        window.location.href = "../Homepage/homepage.html"
       }
     }
   } catch (error) {
