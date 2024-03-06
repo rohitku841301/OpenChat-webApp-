@@ -3,6 +3,6 @@ const router = express.Router();
 const userController = require("../controllers/user");
 const bodyParser = require("body-parser");
 
-router.post("/login", userController.postLogin);
+router.post("/signup", userController.postSignup);
 
 module.exports = router;

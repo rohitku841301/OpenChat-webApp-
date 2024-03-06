@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
-exports.postLogin = async (req, res, next) => {
+exports.postSignup = async (req, res, next) => {
   try {
     const existingUser = await User.findOne({
       where: { email: req.body.email },
