@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql2 = require("mysql2");
 
+const Chat = require("./models/chat");
+const User = require("./models/user");
 const chatRoute = require("./routes/chat")
 const sequelize = require("./database/db");
 const userRoute = require("./routes/user");
@@ -18,6 +20,9 @@ app.use(
 
 app.use("/user", userRoute);
 app.use("/chat", chatRoute);
+
+User.hasMany(Chat);
+Chat.belongsTo(User);
 
 sequelize
   .sync()

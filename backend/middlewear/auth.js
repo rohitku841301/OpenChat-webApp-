@@ -1,17 +1,24 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-exports.authentication = async(req,res,next)=>{
+exports.authentication = async (req, res, next) => {
+  try {
     const headerToken = req.headers.authorization;
-    jwt.verify(headerToken,process.env.JWT_SECRET, (err,decode)=>{
-        if(err){
-            res.status(401).json({
-                reponseMessage:"token verification failed",
-                success:false
-            })
-        }else{
-            console.log(decode);
-            res.user = decode
-        }
-    })
-}
+    if (!headerToken) {
+      return res.status(401).json({
+        responseMessage: "Token not provided",
+        success: false,
+      });
+    }
+    const decode = await jwt.verify(headerToken, process.env.JWT_SECRET);
+
+    console.log(typeof decode);
+    req.user = decode; 
+    next();
+  } catch (error) {
+    res.status(401).json({
+      responseMessage: "Token verification failed",
+      success: false,
+    });
+  }
+};
