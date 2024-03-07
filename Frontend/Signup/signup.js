@@ -24,6 +24,7 @@ async function signupFormHandler(event) {
         if (responseData.status === 200) {
           const msg = responseData.data.reponseMessage;
           alert(msg);
+          window.location.href = "../Login/login.html"
         }
       }
     } catch (error) {

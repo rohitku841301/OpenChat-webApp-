@@ -5,6 +5,16 @@ exports.getChat = async (req, res, next) => {
   try {
     console.log("got it");
     console.log(req.user);
+    const allMessage = await Chat.findAll({
+      order:[["createdAt", "ASC"]]
+    });
+    const result = allMessage.map((result)=>{
+      return result;
+    })
+    res.status(200).json({
+      responseMessage:"Get all message",
+      result:result
+    })
   } catch (error) {
     console.log(error);
   }
