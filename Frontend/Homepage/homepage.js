@@ -19,6 +19,8 @@ async function chatFormHandler(event) {
     if (responseData.status === 200) {
         console.log(responseData);
         console.log(responseData.data.message);
+      document.getElementById("chatMsg").value = "";
+
         await fetchingAllMessage();
     }
   } catch (error) {
@@ -26,29 +28,35 @@ async function chatFormHandler(event) {
   }
 }
 
-async function fetchingAllMessage(){
-  try {
-    document.getElementById("chatMsg").value = "";
-    const chatContainer = document.querySelector(".chatContainer");
-    while(chatContainer.firstChild){
-      chatContainer.removeChild(chatContainer.firstChild);
+setInterval(async() => {
+  await fetchingAllMessage();
+}, 1000);
+
+
+  async function fetchingAllMessage(){
+    try {
+      const chatContainer = document.querySelector(".chatContainer");
+      while(chatContainer.firstChild){
+        chatContainer.removeChild(chatContainer.firstChild);
+      }
+      console.log(chatContainer.length);
+     
+      const token = localStorage.getItem("token");
+      console.log(token);
+      const responseData = await axios.get("http://localhost:3000/chat/getChat", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      console.log(responseData);
+      showChat(responseData.data.result);
+    } catch (error) {
+      console.log(error);
+      window.location.href = "../Login/login.html";
     }
-    console.log(chatContainer.length);
-   
-    const token = localStorage.getItem("token");
-    console.log(token);
-    const responseData = await axios.get("http://localhost:3000/chat/getChat", {
-      headers: {
-        Authorization: token,
-      },
-    });
-    console.log(responseData);
-    showChat(responseData.data.result);
-  } catch (error) {
-    console.log(error);
-    window.location.href = "../Login/login.html";
   }
-}
+
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -57,6 +65,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log(error);
   }
 });
+
+
 
 function showChat(msg) {
   msg.map((userMsg)=>{
