@@ -1,6 +1,7 @@
 async function signupFormHandler(event) {
     try {
       event.preventDefault();
+      console.log("skdjn");
       let formValidation = true;
   
       const signupFormData = {
@@ -39,6 +40,26 @@ async function signupFormHandler(event) {
   }
   
   function signupValidationHandler({ name, email, phone, password }) {
+    if(!name){
+      document.getElementById("formError1").innerText = "-required"
+    }else{
+      document.getElementById("formError1").innerText = "*"
+    }
+    if(!email){
+      document.getElementById("formError2").innerText = "-required"
+    }else{
+      document.getElementById("formError2").innerText = "*"
+    }
+    if(!phone){
+      document.getElementById("formError3").innerText = "-required"
+    }else{
+      document.getElementById("formError3").innerText = "*"
+    }
+    if(!password){
+      document.getElementById("formError4").innerText = "-required"
+    }else{
+      document.getElementById("formError4").innerText = "*"
+    }
     if (!name || !email || !phone || !password) {
       return false;
     } else {

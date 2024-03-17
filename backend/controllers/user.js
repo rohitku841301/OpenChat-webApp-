@@ -40,28 +40,31 @@ exports.postLogin = async (req, res, next) => {
       where: { email: req.body.email },
     });
     if (existingUser) {
-      bcrypt.compare(req.body.password, existingUser.password, (err,result) => {
-        console.log(result);
-        if(err){
-          res.status.json({
-            reponseMessage:"internal server problem",
-          })
-        }else{
-          if (result) {
-            const token = genrateToken(existingUser.id);
-            res.status(200).json({
-              reponseMessage: "login successful",
-              token: token,
+      bcrypt.compare(
+        req.body.password,
+        existingUser.password,
+        (err, result) => {
+          console.log(result);
+          if (err) {
+            res.status.json({
+              reponseMessage: "internal server problem",
             });
           } else {
-            res.status(401).json({
-              responseMessage: "password is incorrect",
-              success: false,
-            });
+            if (result) {
+              const token = genrateToken(existingUser.id);
+              res.status(200).json({
+                reponseMessage: "login successful",
+                token: token,
+              });
+            } else {
+              res.status(401).json({
+                responseMessage: "password is incorrect",
+                success: false,
+              });
+            }
           }
         }
-        
-      });
+      );
     } else {
       res.status(404).json({
         responseMessage: "Email not found",
@@ -71,6 +74,29 @@ exports.postLogin = async (req, res, next) => {
   } catch (error) {
     res.status(500).json({
       responseMessage: "internal server problem",
+    });
+  }
+};
+
+exports.getUserDetails = async (req, res, next) => {
+  try {
+    const userId = req.user;
+
+    const userData = await User.findByPk(userId);
+   
+    if(userData){
+      const userDetails = {
+        name:userData.name,
+        email:userData.email
+      }
+      res.status(200).json({
+        reponseMessage:"successfully get user detail",
+        userDetails:userDetails
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      reponseMessage: "Internal server issue",
     });
   }
 };

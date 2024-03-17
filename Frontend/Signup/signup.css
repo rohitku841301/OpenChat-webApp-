@@ -1,0 +1,99 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl {
+  max-width: 100% !important;
+}
+
+.row {
+  --bs-gutter-x: 0rem;
+  height: 100vh;
+}
+
+.col {
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  margin: auto;
+}
+
+.background {
+  background-image: url("../Images/back_signup.png");
+  background-size: cover;
+  background-position: center;
+  /* width: 100vw; */
+  /* height: 100vh; */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.formContainer {
+  background-color: rgba(0, 0, 0, 0.8);
+  max-width: 500px;
+  margin: auto;
+  padding: 40px;
+}
+
+.formLayout {
+  margin: 20px;
+  color: #BABABA;
+}
+
+.formLayout form .labelName {
+  text-align: left;
+  font-size: 12px;
+}
+
+.formLayout form input {
+  background-color: black;
+}
+
+.formLayout form button{
+  width: 100%;
+  padding: 10px 4px;
+  border-radius: 10px;
+  background: #8A2387;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #F27121, #E94057, #8A2387);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #F27121, #E94057, #8A2387); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+border: none;
+color: white;
+}
+
+.form-control::placeholder {
+  color: whitesmoke !important; /* Use !important to ensure it overrides other styles */
+}
+
+.form-control{
+  color: whitesmoke !important;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  background-color: black; /* Set the background color to transparent */
+  border-color: #ced4da; /* Set the border color to match your design */
+}
+
+
+.form-label {
+  margin: 0.5rem 0.3rem;
+}
+
+.logo {
+  color: white;
+}
+
+.logo img {
+  width: 70px;
+}
+
+.formError{
+  color: #E94057;
+}
