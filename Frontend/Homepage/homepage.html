@@ -218,7 +218,13 @@
         </div>
         <div class="col right-part">
           <div class="right-part-wrapper1">
-            <div class="chatHeader">
+            <div
+              class="chatHeader"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal5"
+              id="chatHeaderProfileOpen"
+            >
               <div class="chatHeader-GroupName"></div>
               <div
                 type="button"
@@ -274,14 +280,61 @@
                     type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModal4"
+                    id="addMember"
                   >
                     <span class="material-symbols-outlined"> person_add </span
                     >Add member
                   </p>
-                  <p>
+                  <p
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop2"
+                    id="leaveGroupPopup"
+                  >
                     <span class="material-symbols-outlined"> move_item </span
                     >Leave group
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Button trigger modal -->
+
+          <!-- Modal7 - leave group -->
+          <div
+            class="modal fade"
+            id="staticBackdrop2"
+            data-bs-keyboard="false"
+            tabindex="-1"
+            aria-labelledby="staticBackdropLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1
+                    class="modal-title fs-5 leaveGroupMessage"
+                    id="staticBackdropLabel"
+                  ></h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+
+                <div class="modal-footer">
+                    
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="exitGroup">Exit</button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -346,7 +399,7 @@
 
           <!-- Modal 5 group info-->
           <div
-            class="modal fade"
+            class="modal fade modal5-index"
             id="exampleModal5"
             data-bs-backdrop="static"
             data-bs-keyboard="false"
@@ -358,28 +411,57 @@
               <div class="modal-content modal-content5">
                 <div class="modal-header">
                   <!-- <div class="modal-header-title"> -->
-                    <h6>Group info</h6>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
+                  <h6>Group info</h6>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
                   <!-- </div> -->
-                 
                 </div>
-                <div class="modal-body">
+                <div class="modal-body boxuiAdmin">
                   <div class="group-header">
+                    <div class="overlay"></div>
+
+                    <div id="popupContainer" class="popup-container">
+                      <div class="popup-content">
+                        <div class="close-pop">
+                          <p id="closePopup" class="close-btn">&times;</p>
+                        </div>
+
+                        <div
+                          class="common-popup extra-popup"
+                          id="makeUserAdmin"
+                        >
+                          <span class="material-symbols-outlined">
+                            shield_person
+                          </span>
+                          <p id="promoteBtn" class="popup-btn">
+                            Promote to admin
+                          </p>
+                        </div>
+                        <div class="common-popup" id="removeMember">
+                          <span class="material-symbols-outlined">
+                            person_remove
+                          </span>
+                          <p id="removeBtn" class="popup-btn">Remove Member</p>
+                        </div>
+                      </div>
+                    </div>
+
                     <h1 id="groupNameHeader"></h1>
                     <p id="groupMemberCount"></p>
                     <h3>CreatedAt</h3>
                     <p id="groupCreatedAt"></p>
                   </div>
 
-                  <h2 id="groupMemberCount1"></h2>
-                  <div id="group-member-details">
+                  <!-- Modal6 promote to admin -->
 
-                  </div>
+                  <h2 id="groupMemberCount1"></h2>
+                  <div id="toast"></div>
+
+                  <div id="group-member-details"></div>
                   <!-- <h1 class="modal-title fs-5" id="staticBackdropLabel">
                     Group info
                   </h1> -->
@@ -399,6 +481,8 @@
       type="module"
       src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.4.0/dist/index.js"
     ></script> -->
+
+    <!-- Pop-up container -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

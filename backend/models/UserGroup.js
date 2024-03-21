@@ -11,6 +11,10 @@ const UserGroup = sequelize.define("UserGroup",{
         type:Sequelize.INTEGER,
         allowNull:false
     },
+    isAdmin:{
+        type:Sequelize.BOOLEAN,
+        allowNull:false
+    }
 },{
     tableName: 'UserGroup', // Explicitly specify the table name
 })

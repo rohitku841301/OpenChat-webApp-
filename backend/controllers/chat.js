@@ -2,6 +2,7 @@ const Chat = require("../models/chat");
 const User = require("../models/user");
 const Group = require("../models/group");
 const UserGroup = require("../models/UserGroup");
+const sequelize = require("../database/db");
 
 exports.getChat = async (req, res, next) => {
   try {
@@ -46,32 +47,46 @@ exports.postChat = async (req, res, next) => {
 };
 
 exports.createGroup = async (req, res, next) => {
+  let transaction = await sequelize.transaction();
   try {
-    console.log(req.body);
     const userId = req.user;
     const user = await User.findByPk(userId);
-
     if (!user) {
       return res.status(404).json({
         responseMessage: "User not found",
         success: false,
       });
     }
-    const groupData = await Group.create({
-      groupName: req.body.groupName,
-      // userId: req.user,
-    });
-    console.log("------");
-    const c = await user.addGroup(groupData);
-    console.log("------");
-    // console.log(c);
+    const isAdmin = req.body.isAdmin;
+    const groupName = req.body.groupName;
+    const groupData = await Group.create(
+      {
+        groupName: groupName,
+        isAdmin: isAdmin,
+      },
+      { transaction: transaction }
+    );
+
+    await UserGroup.create(
+      {
+        userId: user.id,
+        groupId: groupData.id,
+        isAdmin: isAdmin,
+      },
+      { transaction: transaction }
+    );
+
+    await transaction.commit();
     res.status(200).json({
       responseMessage: "successfully group created",
+      success: true,
       groupData: groupData,
     });
   } catch (error) {
+    await transaction.rollback();
     res.status(500).json({
       responseMessage: "Internal server issue",
+      success: false,
     });
   }
 };
@@ -80,6 +95,7 @@ exports.addUserToGroup = async (req, res, next) => {
   try {
     const groupId = parseInt(req.query.groupId);
     const memberEmail = req.body.memberEmail;
+    const isAdmin = req.body.isAdmin;
     const responseData = await User.findOne({ where: { email: memberEmail } });
     if (responseData) {
       const userId = responseData.id;
@@ -90,6 +106,7 @@ exports.addUserToGroup = async (req, res, next) => {
         const addMemberInfo = await UserGroup.create({
           userId: userId,
           groupId: groupId,
+          isAdmin: isAdmin,
         });
         console.log(addMemberInfo);
       } else {
@@ -172,37 +189,38 @@ exports.groupInfo = async (req, res, next) => {
 
     const existingGroup = await Group.findByPk(groupId);
 
-    if(existingGroup){
-     
-      const groupDetails = await existingGroup.getUsers();
-      const groupMemberDetails = groupDetails.map((member)=>({
-        name:member.name,
-        email:member.email
-      }))
-  
-      const groupInfo = {
-        groupName:existingGroup.groupName,
-        groupCreatedAt: existingGroup.createdAt,
-        groupMemberCount: groupMemberDetails.length,
-        groupMember:groupMemberDetails,
+    if (existingGroup) {
+      const groupMember = await UserGroup.findAll({
+        where: { groupId: groupId },
+        order: [
+          [sequelize.literal(`CASE WHEN UserId = ${req.user} THEN 0 ELSE 1 END`), 'ASC'],
+          ["isAdmin", "DESC"]
+        ],
+        include: [
+          {
+            model: User,
+            attributes: ["name", "email"],
+          },
+        ],
+      });
 
-      }
-  
+      const groupInfo = {
+        groupName: existingGroup.groupName,
+        groupCreatedAt: existingGroup.createdAt,
+        groupMemberCount: groupMember.length,
+        groupMember: groupMember,
+      };
+
       return res.status(200).json({
         responseMessage: "Group info fetched successfully",
         groupInfo: groupInfo,
       });
-    }else{
+    } else {
+      console.log(error);
       return res.status(404).status({
-        responseMessage:"group are not existing"
-      })
+        responseMessage: "group are not existing",
+      });
     }
-
-    //grp name
-    //member count
-    //created at
-    // all member name and email
-    
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -210,3 +228,154 @@ exports.groupInfo = async (req, res, next) => {
     });
   }
 };
+
+exports.checkYouAreAdmin = async (req, res, next) => {
+  try {
+    const userId = req.user;
+    const groupId = req.params.groupId;
+    const responseData = await UserGroup.findOne({
+      where: { groupId: groupId, userId: userId },
+    });
+    console.log("result", responseData);
+    if (responseData) {
+      return res.status(200).json({
+        responseMessage: "user are admin",
+        success: true,
+        isAdmin: responseData.isAdmin,
+      });
+    }
+    console.log("heyyy", userId, groupId);
+  } catch (error) {
+    res.status(500).json({
+      responseMessage: "Internal server issue",
+    });
+  }
+};
+
+exports.promoteToAdmin = async(req,res,next)=>{
+  try {
+    const userId = req.user;
+    const userIdToPromote = req.body.userId;
+    const groupId = req.query.groupId;
+    const admin = await UserGroup.findOne({
+      where:{
+        groupId:groupId,
+        userId:userId,
+        isAdmin:true
+      }
+    })
+    if(admin){
+      const promotedMember = await UserGroup.update({isAdmin:true}, {
+        where:{
+          groupId:groupId,
+          userId:userIdToPromote,
+        }
+      })
+      return res.status(200).json({
+        responseMessage:"successfully members has been promoted",
+        promotedMember:promotedMember
+      })
+    }else{
+      return res.status(401).json({
+        responseMessage:"Unauthorized user for promoting the member"
+      })
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      responseMessage: "Internal server issue",
+    }); 
+  }
+}
+
+exports.removeMember = async(req,res,next)=>{
+  try {
+    console.log(req.query);
+    console.log(req.params);
+    const userId = req.user;
+    const userIdToRemove = req.params.userId;
+    const groupId = req.query.groupId;
+    const admin = await UserGroup.findOne({
+      where:{
+        groupId:groupId,
+        userId:userId,
+        isAdmin:true
+      }
+    })
+    if(admin){
+      const removedMember = await UserGroup.destroy({
+        where:{
+          groupId:groupId,
+          userId:userIdToRemove,
+        }
+      })
+      return res.status(200).json({
+        responseMessage:"successfully members has been removed",
+        removedMember:removedMember
+      })
+    }else{
+      return res.status(401).json({
+        responseMessage:"Unauthorized user for promoting the member"
+      })
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      responseMessage: "Internal server issue",
+    });
+  }
+}
+
+exports.exitGroup = async(req,res,next)=>{
+  try {
+    const userId = req.params.userId;
+    const groupId = req.query.groupId;
+    const deletedGroup = await UserGroup.destroy({where:{
+      userId:userId,
+      groupId:groupId
+    }})
+    if(deletedGroup){
+      res.status(200).json({
+        responseMessage: "Successfully exited from group"
+      })
+    }else{
+      res.status(500).json({
+        responseMessage:"Internal server issue"
+      })
+    }
+  } catch (error) {
+    res.status(500).json({
+      responseMessage: "Internal server issue",
+    });
+  }
+}
+
+
+// dumping zone
+
+// const userGroupData = await UserGroup.findAll({
+//   where: {
+//     groupId: groupId,
+//     isAdmin: true,
+//   },
+//   attributes: ["userId"],
+// });
+
+// // Extract user IDs from the userGroupData
+// const userIds = userGroupData.map((userGroup) => userGroup.userId);
+
+// // Now you have the user IDs, you can use them to fetch user details from the User table
+// const users = await User.findAll({ where: { id: userIds } });
+// console.log("heyuu", users);
+
+// for profile
+
+// const usersWithGroups = await User.findAll({
+//   include: [
+//     {
+//       model: Group,
+//       through: UserGroup // Specify the junction table for the many-to-many relationship
+//     }
+//   ]
+// });

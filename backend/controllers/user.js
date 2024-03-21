@@ -87,7 +87,8 @@ exports.getUserDetails = async (req, res, next) => {
     if(userData){
       const userDetails = {
         name:userData.name,
-        email:userData.email
+        email:userData.email,
+        userId:userId
       }
       res.status(200).json({
         reponseMessage:"successfully get user detail",
