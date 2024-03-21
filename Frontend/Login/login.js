@@ -12,7 +12,7 @@ async function loginFormHandler(event) {
 
     if (formValidation) {
       const responseData = await axios.post(
-        "http://localhost:3000/user/login",
+        "http://3.7.252.73:3000/user/login",
         JSON.stringify(loginFormData),
         {
           headers: {

@@ -12,7 +12,7 @@ async function chatFormHandler(event) {
     console.log(msg);
     const token = localStorage.getItem("token");
     const responseData = await axios.post(
-      `http://localhost:3000/chat/postChat/${groupId}`,
+      `http://3.7.252.73:3000/chat/postChat/${groupId}`,
       JSON.stringify(msg),
       {
         headers: {
@@ -50,7 +50,7 @@ async function fetchingAllMessage() {
     //   console.log("yha aaraha hai kya");
     //   const token = localStorage.getItem("token");
     //   const responseData = await axios.get(
-    //     `http://localhost:3000/chat/showGroup/${groupId}`,
+    //     `http://3.7.252.73:3000/chat/showGroup/${groupId}`,
     //     {
     //       headers: {
     //         Authorization: token,
@@ -85,7 +85,7 @@ async function openGroupPage(event) {
     chatHeader.innerText = event.target.innerText;
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      `http://localhost:3000/chat/showGroup/${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -117,7 +117,7 @@ async function fetchingUserDetails() {
     const token = localStorage.getItem("token");
     // console.log(token);
     const responseData = await axios.get(
-      "http://localhost:3000/user/userDetails",
+      "http://3.7.252.73:3000/user/userDetails",
       {
         headers: {
           Authorization: token,
@@ -154,7 +154,7 @@ async function fetchingAllGroup() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      "http://localhost:3000/chat/showGroup",
+      "http://3.7.252.73:3000/chat/showGroup",
       {
         headers: {
           Authorization: token,
@@ -193,7 +193,7 @@ document
       };
       const token = localStorage.getItem("token");
       const responseData = await axios.post(
-        "http://localhost:3000/chat/createGroup",
+        "http://3.7.252.73:3000/chat/createGroup",
         JSON.stringify(groupObj),
         {
           headers: {
@@ -227,7 +227,7 @@ async function checkYouAreAdmin() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      `http://localhost:3000/chat/checkYouAreAdmin/${groupId}`,
+      `http://3.7.252.73:3000/chat/checkYouAreAdmin/${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -271,7 +271,7 @@ async function addUserHandler(event) {
     const token = localStorage.getItem("token");
     console.log("sad", groupId);
     const responseData = await axios.post(
-      `http://localhost:3000/chat/showGroup/addUserToGroup?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/addUserToGroup?groupId=${groupId}`,
       JSON.stringify(addUserData),
       {
         headers: {
@@ -293,13 +293,13 @@ document
 
 async function chatGroupInfo(e) {
   try {
-    e.stopPropagation();
+    // e.stopPropagation();
     console.log("aagya");
     const token = localStorage.getItem("token");
     console.log("aagya");
     console.log(groupId);
     const responseData = await axios.get(
-      `http://localhost:3000/chat/showGroup/group-info/diff?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/group-info/diff?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -408,7 +408,7 @@ document
         isAdmin: true,
       };
       const responseData = await axios.patch(
-        `http://localhost:3000/chat/showGroup/group-info/promote-to-admin?groupId=${groupId}`,
+        `http://3.7.252.73:3000/chat/showGroup/group-info/promote-to-admin?groupId=${groupId}`,
         JSON.stringify(userData),
         {
           headers: {
@@ -438,7 +438,7 @@ document.getElementById("removeMember").addEventListener("click", async () => {
     };
     console.log(userData);
     const responseData = await axios.delete(
-      `http://localhost:3000/chat/showGroup/group-info/removeMember/${memberUserId}?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/group-info/removeMember/${memberUserId}?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -467,7 +467,7 @@ document.getElementById("exitGroup").addEventListener("click", async () => {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.delete(
-      `http://localhost:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -507,7 +507,7 @@ document.getElementById("exitGroup").addEventListener("click", async () => {
 // else {
 //   const token = localStorage.getItem("token");
 //   const responseData = await axios.get(
-//     "http://localhost:3000/chat/getChat",
+//     "http://3.7.252.73:3000/chat/getChat",
 //     {
 //       headers: {
 //         Authorization: token,
