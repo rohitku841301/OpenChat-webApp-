@@ -14,7 +14,7 @@ async function signupFormHandler(event) {
       if (formValidation) {
         console.log("skjn");
         const responseData = await axios.post(
-          "http://localhost:3000/user/signup",
+          "http://3.7.252.73:3000/user/signup",
           JSON.stringify(signupFormData),
           {
             headers: {
