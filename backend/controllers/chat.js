@@ -4,6 +4,9 @@ const Group = require("../models/group");
 const UserGroup = require("../models/UserGroup");
 const sequelize = require("../database/db");
 
+
+
+
 exports.getChat = async (req, res, next) => {
   try {
     const allMessage = await Chat.findAll({
@@ -21,6 +24,7 @@ exports.getChat = async (req, res, next) => {
   }
 };
 
+
 exports.postChat = async (req, res, next) => {
   try {
     const groupId = req.params.groupId;
@@ -33,6 +37,7 @@ exports.postChat = async (req, res, next) => {
     });
     // console.log(messageData);
     if (messageData) {
+      
       res.status(200).json({
         responseMessage: "message delivered",
         message: messageData.message,
@@ -40,6 +45,7 @@ exports.postChat = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       responseMessage: "Internal server issue",
     });
@@ -109,6 +115,10 @@ exports.addUserToGroup = async (req, res, next) => {
           isAdmin: isAdmin,
         });
         console.log(addMemberInfo);
+        return res.status(200).json({
+          responseMessage:"member added succesful",
+          addMemberInfo:addMemberInfo
+        })
       } else {
         return res.status(409).json({
           responseMessage: "user already a member of this grp",
@@ -145,7 +155,7 @@ exports.showGroup = async (req, res, next) => {
       groupName: group.groupName,
       groupId: group.id,
     }));
-    console.log(groupDetails);
+ 
     res.status(200).json({
       responseMessage: "Successfully fetched user groups",
       groupDetails: groupDetails,
@@ -157,6 +167,8 @@ exports.showGroup = async (req, res, next) => {
   }
 };
 
+// name email time msg
+
 exports.getGroupChat = async (req, res, next) => {
   try {
     const groupId = req.params.groupId;
@@ -167,6 +179,13 @@ exports.getGroupChat = async (req, res, next) => {
         groupId: groupId,
       },
       order: [["createdAt", "ASC"]],
+      
+      include: [
+        {
+          model: User,
+          attributes:["name","email"]
+        },
+      ],
     });
     if (responseData) {
       res.status(200).json({
@@ -175,6 +194,7 @@ exports.getGroupChat = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       responseMessage: "Internal server issue",
     });
@@ -193,8 +213,13 @@ exports.groupInfo = async (req, res, next) => {
       const groupMember = await UserGroup.findAll({
         where: { groupId: groupId },
         order: [
-          [sequelize.literal(`CASE WHEN UserId = ${req.user} THEN 0 ELSE 1 END`), 'ASC'],
-          ["isAdmin", "DESC"]
+          [
+            sequelize.literal(
+              `CASE WHEN UserId = ${req.user} THEN 0 ELSE 1 END`
+            ),
+            "ASC",
+          ],
+          ["isAdmin", "DESC"],
         ],
         include: [
           {
@@ -252,44 +277,46 @@ exports.checkYouAreAdmin = async (req, res, next) => {
   }
 };
 
-exports.promoteToAdmin = async(req,res,next)=>{
+exports.promoteToAdmin = async (req, res, next) => {
   try {
     const userId = req.user;
     const userIdToPromote = req.body.userId;
     const groupId = req.query.groupId;
     const admin = await UserGroup.findOne({
-      where:{
-        groupId:groupId,
-        userId:userId,
-        isAdmin:true
-      }
-    })
-    if(admin){
-      const promotedMember = await UserGroup.update({isAdmin:true}, {
-        where:{
-          groupId:groupId,
-          userId:userIdToPromote,
+      where: {
+        groupId: groupId,
+        userId: userId,
+        isAdmin: true,
+      },
+    });
+    if (admin) {
+      const promotedMember = await UserGroup.update(
+        { isAdmin: true },
+        {
+          where: {
+            groupId: groupId,
+            userId: userIdToPromote,
+          },
         }
-      })
+      );
       return res.status(200).json({
-        responseMessage:"successfully members has been promoted",
-        promotedMember:promotedMember
-      })
-    }else{
+        responseMessage: "successfully members has been promoted",
+        promotedMember: promotedMember,
+      });
+    } else {
       return res.status(401).json({
-        responseMessage:"Unauthorized user for promoting the member"
-      })
+        responseMessage: "Unauthorized user for promoting the member",
+      });
     }
-
   } catch (error) {
     console.log(error);
     res.status(500).json({
       responseMessage: "Internal server issue",
-    }); 
+    });
   }
-}
+};
 
-exports.removeMember = async(req,res,next)=>{
+exports.removeMember = async (req, res, next) => {
   try {
     console.log(req.query);
     console.log(req.params);
@@ -297,27 +324,27 @@ exports.removeMember = async(req,res,next)=>{
     const userIdToRemove = req.params.userId;
     const groupId = req.query.groupId;
     const admin = await UserGroup.findOne({
-      where:{
-        groupId:groupId,
-        userId:userId,
-        isAdmin:true
-      }
-    })
-    if(admin){
+      where: {
+        groupId: groupId,
+        userId: userId,
+        isAdmin: true,
+      },
+    });
+    if (admin) {
       const removedMember = await UserGroup.destroy({
-        where:{
-          groupId:groupId,
-          userId:userIdToRemove,
-        }
-      })
+        where: {
+          groupId: groupId,
+          userId: userIdToRemove,
+        },
+      });
       return res.status(200).json({
-        responseMessage:"successfully members has been removed",
-        removedMember:removedMember
-      })
-    }else{
+        responseMessage: "successfully members has been removed",
+        removedMember: removedMember,
+      });
+    } else {
       return res.status(401).json({
-        responseMessage:"Unauthorized user for promoting the member"
-      })
+        responseMessage: "Unauthorized user for promoting the member",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -325,32 +352,33 @@ exports.removeMember = async(req,res,next)=>{
       responseMessage: "Internal server issue",
     });
   }
-}
+};
 
-exports.exitGroup = async(req,res,next)=>{
+exports.exitGroup = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const groupId = req.query.groupId;
-    const deletedGroup = await UserGroup.destroy({where:{
-      userId:userId,
-      groupId:groupId
-    }})
-    if(deletedGroup){
+    const deletedGroup = await UserGroup.destroy({
+      where: {
+        userId: userId,
+        groupId: groupId,
+      },
+    });
+    if (deletedGroup) {
       res.status(200).json({
-        responseMessage: "Successfully exited from group"
-      })
-    }else{
+        responseMessage: "Successfully exited from group",
+      });
+    } else {
       res.status(500).json({
-        responseMessage:"Internal server issue"
-      })
+        responseMessage: "Internal server issue",
+      });
     }
   } catch (error) {
     res.status(500).json({
       responseMessage: "Internal server issue",
     });
   }
-}
-
+};
 
 // dumping zone
 

@@ -181,8 +181,6 @@ h6 {
   height: 4vh;
 }
 
-
-
 .singleGroup {
   text-align: left;
   font-size: 20px;
@@ -232,13 +230,70 @@ h6 {
   line-height: 2;
 }
 
+.chatContainerWrapper{
+
+}
+
 .chatContainer {
-  height: 70vh;
-  overflow-y: auto;
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Arrange children vertically */
+  /* height: 70vh; */
+  width: 70%;
+  padding-bottom: 60px;
+}
+
+.msg-box{
+  color: black;
+  width: fit-content; /* Set width to fit content */
+  background-color: whitesmoke;
+  margin: 30px 0px 0px 40px;
+  padding: 12px 15px;
+  border-radius: 15px 15px 15px 0px;
+}
+
+.msg-user-details{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.msg-user-details h6{
+  font-size: 12px;
+  color: #990011ff;
+}
+
+.msg-user-details p{
+  margin-bottom: 0px;
+  margin-left: 50px;
+  font-size: 11px;
+}
+
+.msg-user-msg{
+  text-align: left;
+}
+
+.msg-user-msg p {
+  margin-bottom: 0px;
+  line-height: 1.2;
+  margin-top: 2.2px;
+}
+
+.msg-time-box{
+  text-align: right;
+  line-height: 0.4;
+}
+
+.msg-time-box span{
+  /* margin-bottom: 0px; */
+  font-size: 10px;
 }
 
 .chatContainerWrapper {
-  background-color: #990011ff;
+  background: #200122;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #6f0000, #200122);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #6f0000, #200122); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+overflow-y: auto;
+
   height: 88vh;
 }
 
@@ -437,7 +492,6 @@ h6 {
   width: 60%;
 }
 
-
 .overlay {
   position: fixed;
   top: 0;
@@ -454,17 +508,16 @@ h6 {
   z-index: 1000; /* Ensure it's above overlay */
 }
 
-
 .popup-content {
   padding: 10px 0px;
 }
 
-#closePopup{
+#closePopup {
   margin-bottom: 10px;
   font-size: 20px;
 }
 
-.common-popup{
+.common-popup {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -473,7 +526,7 @@ h6 {
   /* background-color: red; */
 }
 
-.close-pop{
+.close-pop {
   margin: 10px 0px;
 }
 
@@ -481,7 +534,7 @@ h6 {
   top: 0px;
 }
 
-.extra-popup{
+.extra-popup {
   margin-top: 16px;
 }
 
@@ -489,24 +542,25 @@ h6 {
   line-height: 1;
 }
 
-.common-popup p{
+.common-popup p {
   margin-bottom: 0px;
   text-align: left;
   font-size: 15px;
 }
 
-.common-popup span{
+.common-popup span {
   font-size: 18px;
 }
 
-.common-popup{
+.common-popup {
   padding: 8px 10px;
   cursor: pointer;
 }
 
-.common-popup:hover{
+.common-popup:hover {
   background-color: #d1d1d1;
 }
+
 
 
 .container,

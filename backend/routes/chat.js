@@ -8,7 +8,7 @@ router.post("/postChat/:groupId", user.authentication, chatController.postChat);
 router.post("/createGroup", user.authentication, chatController.createGroup);
 router.get("/showGroup", user.authentication, chatController.showGroup);
 
-router.get("/showGroup/:groupId", user.authentication, chatController.getGroupChat);
+router.get("/showGroup/getGroupChat/:groupId", user.authentication, chatController.getGroupChat);
 router.post("/showGroup/addUserToGroup", user.authentication, chatController.addUserToGroup);
 router.get("/showGroup/group-info/diff", user.authentication, chatController.groupInfo);
 router.patch("/showGroup/group-info/promote-to-admin", user.authentication, chatController.promoteToAdmin);
