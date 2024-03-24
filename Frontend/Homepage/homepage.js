@@ -1,4 +1,4 @@
-const socket = io("http://localhost:3000");
+const socket = io("http://3.7.252.73:3000");
 socket.on("connection", (socket) => {
   console.log("socket connected");
 });
@@ -27,7 +27,7 @@ async function fetchingAllGroup() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      "http://localhost:3000/chat/showGroup",
+      "http://3.7.252.73:3000/chat/showGroup",
       {
         headers: {
           Authorization: token,
@@ -68,7 +68,7 @@ async function fetchingUserDetails() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      "http://localhost:3000/user/userDetails",
+      "http://3.7.252.73:3000/user/userDetails",
       {
         headers: {
           Authorization: token,
@@ -178,7 +178,7 @@ async function fetchingAllMessage() {
     } else {
       const token = localStorage.getItem("token");
       const responseData = await axios.get(
-        `http://localhost:3000/chat/showGroup/getGroupChat/${groupId}`,
+        `http://3.7.252.73:3000/chat/showGroup/getGroupChat/${groupId}`,
         {
           headers: {
             Authorization: token,
@@ -259,7 +259,7 @@ async function chatFormHandler(event) {
     if (msg.message) {
       const token = localStorage.getItem("token");
       const responseData = await axios.post(
-        `http://localhost:3000/chat/postChat/${groupId}`,
+        `http://3.7.252.73:3000/chat/postChat/${groupId}`,
         JSON.stringify(msg),
         {
           headers: {
@@ -293,7 +293,7 @@ async function chatGroupInfo(e) {
     console.log("aagya");
     console.log(groupId);
     const responseData = await axios.get(
-      `http://localhost:3000/chat/showGroup/group-info/diff?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/group-info/diff?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -310,7 +310,7 @@ async function checkYouAreAdmin() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      `http://localhost:3000/chat/checkYouAreAdmin/${groupId}`,
+      `http://3.7.252.73:3000/chat/checkYouAreAdmin/${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -405,7 +405,7 @@ async function addUserHandler(event) {
     const token = localStorage.getItem("token");
     console.log("sad", groupId);
     const responseData = await axios.post(
-      `http://localhost:3000/chat/showGroup/addUserToGroup?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/addUserToGroup?groupId=${groupId}`,
       JSON.stringify(addUserData),
       {
         headers: {
@@ -434,7 +434,7 @@ document.getElementById("exitGroup").addEventListener("click", async () => {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.delete(
-      `http://localhost:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -502,7 +502,7 @@ document
         isAdmin: true,
       };
       const responseData = await axios.patch(
-        `http://localhost:3000/chat/showGroup/group-info/promote-to-admin?groupId=${groupId}`,
+        `http://3.7.252.73:3000/chat/showGroup/group-info/promote-to-admin?groupId=${groupId}`,
         JSON.stringify(userData),
         {
           headers: {
@@ -532,7 +532,7 @@ document.getElementById("removeMember").addEventListener("click", async () => {
     };
     console.log(userData);
     const responseData = await axios.delete(
-      `http://localhost:3000/chat/showGroup/group-info/removeMember/${memberUserId}?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/group-info/removeMember/${memberUserId}?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -560,7 +560,7 @@ async function createGroup() {
     };
     const token = localStorage.getItem("token");
     const responseData = await axios.post(
-      "http://localhost:3000/chat/createGroup",
+      "http://3.7.252.73:3000/chat/createGroup",
       JSON.stringify(groupObj),
       {
         headers: {

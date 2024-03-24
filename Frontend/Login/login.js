@@ -2,7 +2,7 @@ async function loginFormHandler(event) {
   try {
     event.preventDefault();
     console.log("sdkj");
-    let formValidation = true;
+    let formValidation = true;     
     const loginFormData = {
       email: event.target.email.value,
       password: event.target.password.value,
@@ -12,7 +12,7 @@ async function loginFormHandler(event) {
 
     if (formValidation) {
       const responseData = await axios.post(
-        "http://localhost:3000/user/login",
+        "http://3.7.252.73:3000/user/login",
         JSON.stringify(loginFormData),
         {
           headers: {

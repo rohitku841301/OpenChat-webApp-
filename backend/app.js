@@ -54,7 +54,7 @@ app.use(
   })
 );
 
-// http://localhost   http://localhost
+// http://3.7.252.73   http://3.7.252.73
 
 app.use("/Frontend", express.static(path.join(__dirname, "../Frontend")));
 
