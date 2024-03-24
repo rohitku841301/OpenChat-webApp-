@@ -32,9 +32,11 @@
 }
 
 .right-part-wrapper2 {
-  background-color: yellow;
-
-  display: flex;
+  background: #200122;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #6f0000, #200122);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #6f0000, #200122); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: white;
+  display: none;
   align-items: center;
   justify-content: center;
   height: 96vh;
@@ -44,7 +46,7 @@
   border-radius: 20px !important;
   background-color: white;
   padding: 4px 15px;
-  max-width: 100%;
+  width: 100%;
 }
 
 .hamburger-icon {
@@ -292,6 +294,7 @@ h6 {
   background: #200122;  /* fallback for old browsers */
 background: -webkit-linear-gradient(to right, #6f0000, #200122);  /* Chrome 10-25, Safari 5.1-6 */
 background: linear-gradient(to right, #6f0000, #200122); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 overflow-y: auto;
 
   height: 88vh;
@@ -304,27 +307,62 @@ overflow-y: auto;
   /* margin: auto; */
 }
 
-.sender form {
+.senderWrapper {
   position: absolute;
   bottom: 0;
   width: 100%;
   display: flex;
-}
-
-.sender button {
   background-color: #fcf6f5ff;
-  border: none;
+  border-left: 1px solid grey;
+  align-items: center;
+  padding: 0px 6px;
 }
 
-.emojibtn {
-  border-left: 2px solid #ccc;
+.commonFormButton{
+  padding: 9px 14px;
+  border: none;
+    border-radius: 5px;
+    /* background-color: red; */
+    display: flex;
+    align-items: center;
+  cursor: pointer;
+
+    /* margin: 0px 4px; */
 }
+
+.commonFormButton span{
+  font-size: 20px;
+}
+
+.commonFormButton:hover{
+  background-color: #d1d1d1;
+}
+
+
+.chatForm form{
+  display: flex;
+  /* width: 100%; */
+}
+
+.chatForm{
+  width: 100%;
+}
+
+input:focus {
+  border-color: none; /* or border-color: transparent; */
+  box-shadow: none;
+}
+
+
+
+
 
 .sender input {
   width: 100%;
   padding: 10px 20px;
   border-radius: 0px;
   border: none;
+  outline: none;
   background-color: #fcf6f5ff;
 }
 
@@ -365,9 +403,9 @@ overflow-y: auto;
 }
 
 /* ------back */
-/* .modal-backdrop {
+.modal-backdrop {
   display: none !important;
-} */
+}
 
 /* ------------ */
 
@@ -574,3 +612,25 @@ overflow-y: auto;
   padding-right: calc(var(--bs-gutter-x) * 0);
   padding-left: calc(var(--bs-gutter-x) * 0);
 }
+
+.fg-emoji-container {
+  position: fixed;
+  bottom: 47px;
+  left: 307px;
+  width: 294px;
+  height: 347px;
+  border-radius: 5px;
+  box-shadow: 0px 3px 20px 0px rgba(0, 0, 0, 0.62);
+  background-color: white;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+/* @media screen and (max-width: 778px) {
+  
+  .left-part, .right-part {
+    width: 100%;
+  }
+} */
+
+

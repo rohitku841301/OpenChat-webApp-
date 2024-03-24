@@ -1,4 +1,4 @@
-const socket = io("http://3.7.252.73:3000");
+const socket = io("http://localhost:3000");
 socket.on("connection", (socket) => {
   console.log("socket connected");
 });
@@ -10,6 +10,11 @@ let groupName = "";
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
+    screenResize()
+    if (groupId === null) {
+      document.querySelector(".right-part-wrapper1").style.display = "none";
+      document.querySelector(".right-part-wrapper2").style.display = "flex";
+    }
     await fetchingAllGroup();
   } catch (error) {
     console.log("yaha bhi");
@@ -22,7 +27,7 @@ async function fetchingAllGroup() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      "http://3.7.252.73:3000/chat/showGroup",
+      "http://localhost:3000/chat/showGroup",
       {
         headers: {
           Authorization: token,
@@ -63,7 +68,7 @@ async function fetchingUserDetails() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      "http://3.7.252.73:3000/user/userDetails",
+      "http://localhost:3000/user/userDetails",
       {
         headers: {
           Authorization: token,
@@ -89,14 +94,59 @@ function showUserDetails(userDetails) {
 
 async function openGroupPage(event) {
   try {
+
     showChatHeader(event);
+    screenResize();
+
     await fetchingAllMessage();
   } catch (error) {
     console.log(error);
   }
 }
 
+function screenResize() {
+  const width = window.innerWidth;
+  // console.log(width);
+  if (width < 576) {
+    if (groupId === null) {
+      console.log("hoja");
+      // document.querySelector(".left-part").style.width = "20%";
+      document.querySelector(".left-part").style.maxWidth = "100%";
+      document.querySelector(".right-part").style.display = "none";
+    document.querySelector(".back").style.display="block"
+
+    }else{
+      console.log("aagya");
+    document.querySelector(".back").style.display="block"
+
+      document.querySelector(".right-part").style.display = "block";
+
+      document.querySelector(".left-part").style.display = "none";
+    }
+  } else {
+    // document.querySelector(".left-part").style.maxWidth = "100%";
+    document.querySelector(".back").style.display="none"
+    document.querySelector(".left-part").style.maxWidth = "300px";
+    document.querySelector(".left-part").style.display = "block";
+    document.querySelector(".right-part").style.display = "block";
+  }
+}
+
+window.addEventListener("resize", screenResize);
+
+document.querySelector(".back").addEventListener("click", async()=>{
+  // groupId=null
+  document.querySelector(".left-part").style.maxWidth = "100%";
+  document.querySelector(".right-part").style.display = "none";
+  document.querySelector(".left-part").style.display = "block";
+
+  await fetchingAllGroup();
+})
+
 function showChatHeader(event) {
+  document.querySelector(".right-part-wrapper1").style.display = "block";
+  document.querySelector(".right-part-wrapper2").style.display = "none";
+
   const groupNameContainer = document.getElementById("groupNameContainer");
   const h4Elements = groupNameContainer.querySelectorAll("h4");
   h4Elements.forEach((h4) => {
@@ -113,8 +163,6 @@ socket.on("message-received", async (msg) => {
   await fetchingAllMessage();
 });
 
-
-
 async function fetchingAllMessage() {
   try {
     const chatContainer = document.querySelector(".chatContainer");
@@ -130,7 +178,7 @@ async function fetchingAllMessage() {
     } else {
       const token = localStorage.getItem("token");
       const responseData = await axios.get(
-        `http://3.7.252.73:3000/chat/showGroup/getGroupChat/${groupId}`,
+        `http://localhost:3000/chat/showGroup/getGroupChat/${groupId}`,
         {
           headers: {
             Authorization: token,
@@ -200,11 +248,10 @@ function showChat(msg) {
   });
 }
 
-
-
 async function chatFormHandler(event) {
   try {
     event.preventDefault();
+
     const msg = {
       message: event.target.chatMsg.value,
     };
@@ -212,7 +259,7 @@ async function chatFormHandler(event) {
     if (msg.message) {
       const token = localStorage.getItem("token");
       const responseData = await axios.post(
-        `http://3.7.252.73:3000/chat/postChat/${groupId}`,
+        `http://localhost:3000/chat/postChat/${groupId}`,
         JSON.stringify(msg),
         {
           headers: {
@@ -235,9 +282,9 @@ async function chatFormHandler(event) {
   }
 }
 
-document
-  .getElementById("chatHeaderProfileOpen")
-  .addEventListener("click", chatGroupInfo);
+// document
+//   .getElementById("chatHeaderProfileOpen")
+//   .addEventListener("click", chatGroupInfo);
 async function chatGroupInfo(e) {
   try {
     // e.stopPropagation();
@@ -246,7 +293,7 @@ async function chatGroupInfo(e) {
     console.log("aagya");
     console.log(groupId);
     const responseData = await axios.get(
-      `http://3.7.252.73:3000/chat/showGroup/group-info/diff?groupId=${groupId}`,
+      `http://localhost:3000/chat/showGroup/group-info/diff?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -263,7 +310,7 @@ async function checkYouAreAdmin() {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.get(
-      `http://3.7.252.73:3000/chat/checkYouAreAdmin/${groupId}`,
+      `http://localhost:3000/chat/checkYouAreAdmin/${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -358,7 +405,7 @@ async function addUserHandler(event) {
     const token = localStorage.getItem("token");
     console.log("sad", groupId);
     const responseData = await axios.post(
-      `http://3.7.252.73:3000/chat/showGroup/addUserToGroup?groupId=${groupId}`,
+      `http://localhost:3000/chat/showGroup/addUserToGroup?groupId=${groupId}`,
       JSON.stringify(addUserData),
       {
         headers: {
@@ -367,8 +414,8 @@ async function addUserHandler(event) {
         },
       }
     );
-    console.log("adddd",responseData);
-    if(responseData.status===200){
+    console.log("adddd", responseData);
+    if (responseData.status === 200) {
       console.log("hlwwww");
       socket.emit("add-member-notification", "member");
     }
@@ -387,7 +434,7 @@ document.getElementById("exitGroup").addEventListener("click", async () => {
   try {
     const token = localStorage.getItem("token");
     const responseData = await axios.delete(
-      `http://3.7.252.73:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
+      `http://localhost:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -455,7 +502,7 @@ document
         isAdmin: true,
       };
       const responseData = await axios.patch(
-        `http://3.7.252.73:3000/chat/showGroup/group-info/promote-to-admin?groupId=${groupId}`,
+        `http://localhost:3000/chat/showGroup/group-info/promote-to-admin?groupId=${groupId}`,
         JSON.stringify(userData),
         {
           headers: {
@@ -485,7 +532,7 @@ document.getElementById("removeMember").addEventListener("click", async () => {
     };
     console.log(userData);
     const responseData = await axios.delete(
-      `http://3.7.252.73:3000/chat/showGroup/group-info/removeMember/${memberUserId}?groupId=${groupId}`,
+      `http://localhost:3000/chat/showGroup/group-info/removeMember/${memberUserId}?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -504,8 +551,6 @@ document.getElementById("removeMember").addEventListener("click", async () => {
   }
 });
 
-
-
 async function createGroup() {
   try {
     const groupName = document.getElementById("groupName").value;
@@ -515,7 +560,7 @@ async function createGroup() {
     };
     const token = localStorage.getItem("token");
     const responseData = await axios.post(
-      "http://3.7.252.73:3000/chat/createGroup",
+      "http://localhost:3000/chat/createGroup",
       JSON.stringify(groupObj),
       {
         headers: {
@@ -539,6 +584,4 @@ async function createGroup() {
   }
 }
 
-document
-  .getElementById("create-group")
-  .addEventListener("click", createGroup);
+document.getElementById("create-group").addEventListener("click", createGroup);
