@@ -1,9 +1,7 @@
 async function signupFormHandler(event) {
     try {
       event.preventDefault();
-      console.log("skdjn");
       let formValidation = true;
-  
       const signupFormData = {
         name: event.target.name.value,
         email: event.target.email.value,
@@ -12,7 +10,6 @@ async function signupFormHandler(event) {
       };
       formValidation = signupValidationHandler(signupFormData);
       if (formValidation) {
-        console.log("skjn");
         const responseData = await axios.post(
           "http://3.7.252.73:3000/user/signup",
           JSON.stringify(signupFormData),
@@ -23,16 +20,17 @@ async function signupFormHandler(event) {
           }
         );
         if (responseData.status === 200) {
-          const msg = responseData.data.reponseMessage;
+          const msg = responseData.data.responseMessage;
           alert(msg);
           window.location.href = "../Login/login.html"
         }
       }
     } catch (error) {
+      console.log(error);
       if (error.response.status === 404) {
-        alert(error.response.data.reponseMessage);
+        alert(error.response.data.responseMessage);
       } else if (error.response.status === 500) {
-        alert(error.response.data.reponseMessage);
+        alert(error.response.data.responseMessage);
       } else {
         console.log(error);
       }

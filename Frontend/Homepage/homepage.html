@@ -100,19 +100,10 @@
                   ></button>
                 </div>
                 <div class="modal-body">
-                  <div class="common-modalOption">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="25"
-                      height="25"
-                    >
-                      <path
-                        fill="#444343"
-                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm0 6c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                      />
-                      <path fill="none" d="M0 0h24v24H0z" />
-                    </svg>
+                  <div class="common-modalOption diff-modal">
+                    <span class="material-symbols-outlined">
+                      person
+                      </span>
                     <h5>Profile</h5>
                   </div>
                   <div
@@ -121,43 +112,39 @@
                     data-bs-target="#exampleModal2"
                     class="common-modalOption"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="25"
-                      height="25"
-                    >
-                      <path
-                        fill="#444343"
-                        d="M12,14c1.656,0,3-1.344,3-3s-1.344-3-3-3s-3,1.344-3,3S10.344,14,12,14z M6,10c0,1.656,1.344,3,3,3s3-1.344,3-3 s-1.344-3-3-3S6,8.344,6,10z M18,10c0,1.656,1.344,3,3,3s3-1.344,3-3s-1.344-3-3-3S18,8.344,18,10z M12,16c-3.313,0-9,1.672-9,5v2 h18v-2C21,17.672,15.313,16,12,16z"
-                      />
-                      <path fill="none" d="M0,0h24v24H0V0z" />
-                    </svg>
+                  <span class="material-symbols-outlined">
+                    groups
+                    </span>
                     <h5>Create Group</h5>
                   </div>
+                  <div
+                  type="button"
+                  
+                  class="common-modalOption"
+                  id="logout"
+                >
+                <span class="material-symbols-outlined">
+                  logout
+                  </span>
+                  <h5>Logout</h5>
+                </div>
+
+                  
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- create hamburger model -->
-          <div class="chat-category">
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">All Chats</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Groups</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Contacts</a>
-              </li>
-            </ul>
-          </div>
+         
 
           <div class="groupesContainer">
             <div id="groupNameContainer"></div>
           </div>
+
+          <!-- <form onsubmit="demoForm(event)" id="demoForm">
+            <input type="file" accept="image/*" id="fileInput">
+            <button type="submit">upload</button>
+          </form> -->
 
           <!-- create-group modal -->
           <div
@@ -252,17 +239,25 @@
                   <span class="second-btn uk-button uk-button-primary material-symbols-outlined">add_reaction</span>
               </div>
                 
-                <div class="ImageButton commonFormButton">
-                  <span class="material-symbols-outlined">
-                    photo_library
-                    </span>
-                </div>
+              <div class="ImageButton commonFormButton" onclick="document.getElementById('fileInput').click();">
+                <span class="material-symbols-outlined">photo_library</span>
+            </div>
+            <div class="deleteButton commonFormButton">
+              <span class="material-symbols-outlined">
+                delete
+                </span>
+            </div>
+           
+           
                   <div class="chatForm">
-                    <form onsubmit="chatFormHandler(event)" class="">
+                    <form id="chatForm" onsubmit="chatFormHandler(event)" class="">
                       
                       <label for="chatMsg"></label>
                       
-                  <input class="two uk-textarea uk-margin" type="text" name="chatMsg" id="chatMsg" placeholder="Type your message...">
+                      <input class="two uk-textarea uk-margin" type="text" name="chatMsg" id="chatMsg" placeholder="Type your message...">
+                      <label for="fileInput" id="selectedFileName" style="display: none;"></label>
+                      <input type="file" id="fileInput" onchange="updateFileName()" style="display: none;" accept="image/*, .pdf, .csv" >
+                  
 
                       <button type="submit" id="send-button" class="commonFormButton"><span class="material-symbols-outlined">
                         send
@@ -315,7 +310,7 @@
                     id="leaveGroupPopup"
                   >
                     <span class="material-symbols-outlined"> move_item </span
-                    >Leave group
+                    >Exit group
                   </p>
                 </div>
               </div>
@@ -417,7 +412,7 @@
                         class="btn btn-primary"
                         data-bs-dismiss="modal"
                       >
-                        Create
+                        Add Member
                       </button>
                     </div>
                   </form>
@@ -425,6 +420,8 @@
               </div>
             </div>
           </div>
+          
+          <!-- <embed src="path_to_your_pdf_file.pdf" type="application/pdf" width="100%" height="600px" /> -->
 
           <!-- Modal 5 group info-->
           <div
@@ -495,6 +492,8 @@
               </div>
             </div>
           </div>
+
+          
 
           <!-- <div class="right-part-wrapper2">
             <p>Select a chat to start messaging</p>

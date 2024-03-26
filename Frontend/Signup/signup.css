@@ -4,6 +4,16 @@
   box-sizing: border-box;
 }
 
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+
 .container,
 .container-lg,
 .container-md,
@@ -25,7 +35,7 @@
 }
 
 .background {
-  background-image: url("../Images/back_signup.png");
+  background-image: url("../Images/background.png");
   background-size: cover;
   background-position: center;
   /* width: 100vw; */
@@ -36,7 +46,7 @@
 }
 
 .formContainer {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #151f28;
   max-width: 500px;
   margin: auto;
   padding: 40px;
@@ -60,11 +70,10 @@
   width: 100%;
   padding: 10px 4px;
   border-radius: 10px;
-  background: #8A2387;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #F27121, #E94057, #8A2387);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #F27121, #E94057, #8A2387); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+background-color: #990011ff;
 border: none;
-color: white;
+color: #fcf6f5ff;
 }
 
 .form-control::placeholder {
@@ -87,7 +96,7 @@ color: white;
 }
 
 .logo {
-  color: white;
+  color: #fcf6f5ff;
 }
 
 .logo img {

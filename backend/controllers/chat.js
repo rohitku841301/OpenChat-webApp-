@@ -3,9 +3,7 @@ const User = require("../models/user");
 const Group = require("../models/group");
 const UserGroup = require("../models/UserGroup");
 const sequelize = require("../database/db");
-
-
-
+const { uploadToS3 } = require("../services/awsS3");
 
 exports.getChat = async (req, res, next) => {
   try {
@@ -24,20 +22,36 @@ exports.getChat = async (req, res, next) => {
   }
 };
 
-
 exports.postChat = async (req, res, next) => {
   try {
+    let contentType = null
+    let userMessage = null
+    console.log("body", req.body);
+    console.log("file", req.file);
+    let fileLink = null;
+    if (req.file) {
+      fileLink = await uploadToS3(req.file.originalname, req.file.buffer);
+      console.log(fileLink);
+      contentType="image"
+    }
     const groupId = req.params.groupId;
     const userId = req.user;
-    console.log(req.user);
+    if(req.body.chatMsg){
+      userMessage = req.body.chatMsg;
+      contentType = "text";
+    }else{
+      userMessage = fileLink
+      contentType = "image"
+    }
+   
     const messageData = await Chat.create({
-      message: req.body.message,
+      contentType: contentType,
+      content: userMessage,
       userId: userId,
       groupId: groupId,
     });
-    // console.log(messageData);
+
     if (messageData) {
-      
       res.status(200).json({
         responseMessage: "message delivered",
         message: messageData.message,
@@ -116,9 +130,9 @@ exports.addUserToGroup = async (req, res, next) => {
         });
         console.log(addMemberInfo);
         return res.status(200).json({
-          responseMessage:"member added succesful",
-          addMemberInfo:addMemberInfo
-        })
+          responseMessage: "member added succesful",
+          addMemberInfo: addMemberInfo,
+        });
       } else {
         return res.status(409).json({
           responseMessage: "user already a member of this grp",
@@ -126,7 +140,7 @@ exports.addUserToGroup = async (req, res, next) => {
       }
     } else {
       res.status(404).json({
-        responseMessage: "User has not existed",
+        responseMessage: "member not found",
       });
     }
   } catch (error) {
@@ -148,14 +162,12 @@ exports.showGroup = async (req, res, next) => {
         success: false,
       });
     }
-
     const userGroups = await user.getGroups();
-    // console.log(userGroups);
     const groupDetails = userGroups.map((group) => ({
       groupName: group.groupName,
       groupId: group.id,
     }));
- 
+
     res.status(200).json({
       responseMessage: "Successfully fetched user groups",
       groupDetails: groupDetails,
@@ -173,26 +185,32 @@ exports.getGroupChat = async (req, res, next) => {
   try {
     const groupId = req.params.groupId;
     const userId = req.user;
-    console.log(req.params.groupId);
-    const responseData = await Chat.findAll({
-      where: {
-        groupId: groupId,
-      },
-      order: [["createdAt", "ASC"]],
-      
-      include: [
-        {
-          model: User,
-          attributes:["name","email"]
+    if(groupId){
+      const responseData = await Chat.findAll({
+        where: {
+          groupId: groupId,
         },
-      ],
-    });
-    if (responseData) {
-      res.status(200).json({
-        responseMessage: "get all group chat",
-        responseData: responseData,
+        order: [["createdAt", "ASC"]],
+  
+        include: [
+          {
+            model: User,
+            attributes: ["name", "email"],
+          },
+        ],
       });
+      if (responseData) {
+        res.status(200).json({
+          responseMessage: "get all group chat",
+          responseData: responseData,
+        });
+      }
+    }else{
+      return res.status(400).json({
+        responseMessage:"bad request"
+      })
     }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -203,49 +221,52 @@ exports.getGroupChat = async (req, res, next) => {
 
 exports.groupInfo = async (req, res, next) => {
   try {
-    console.log("Backend");
     const groupId = parseInt(req.query.groupId);
-    console.log(groupId);
-
     const existingGroup = await Group.findByPk(groupId);
-
-    if (existingGroup) {
-      const groupMember = await UserGroup.findAll({
-        where: { groupId: groupId },
-        order: [
-          [
-            sequelize.literal(
-              `CASE WHEN UserId = ${req.user} THEN 0 ELSE 1 END`
-            ),
-            "ASC",
+    if(groupId){
+      if (existingGroup) {
+        const groupMember = await UserGroup.findAll({
+          where: { groupId: groupId },
+          order: [
+            [
+              sequelize.literal(
+                `CASE WHEN UserId = ${req.user} THEN 0 ELSE 1 END`
+              ),
+              "ASC",
+            ],
+            ["isAdmin", "DESC"],
           ],
-          ["isAdmin", "DESC"],
-        ],
-        include: [
-          {
-            model: User,
-            attributes: ["name", "email"],
-          },
-        ],
-      });
-
-      const groupInfo = {
-        groupName: existingGroup.groupName,
-        groupCreatedAt: existingGroup.createdAt,
-        groupMemberCount: groupMember.length,
-        groupMember: groupMember,
-      };
-
-      return res.status(200).json({
-        responseMessage: "Group info fetched successfully",
-        groupInfo: groupInfo,
-      });
-    } else {
-      console.log(error);
-      return res.status(404).status({
-        responseMessage: "group are not existing",
-      });
+          include: [
+            {
+              model: User,
+              attributes: ["name", "email"],
+            },
+          ],
+        });
+  
+        const groupInfo = {
+          groupName: existingGroup.groupName,
+          groupCreatedAt: existingGroup.createdAt,
+          groupMemberCount: groupMember.length,
+          groupMember: groupMember,
+        };
+  
+        return res.status(200).json({
+          responseMessage: "Group info fetched successfully",
+          groupInfo: groupInfo,
+        });
+      } else {
+        console.log(error);
+        return res.status(404).status({
+          responseMessage: "group are not existing",
+        });
+      }
+    }else{
+      return res.status(400).json({
+        responseMessage:"bad request"
+      })
     }
+    
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -258,18 +279,24 @@ exports.checkYouAreAdmin = async (req, res, next) => {
   try {
     const userId = req.user;
     const groupId = req.params.groupId;
-    const responseData = await UserGroup.findOne({
-      where: { groupId: groupId, userId: userId },
-    });
-    console.log("result", responseData);
-    if (responseData) {
-      return res.status(200).json({
-        responseMessage: "user are admin",
-        success: true,
-        isAdmin: responseData.isAdmin,
+    if(groupId){
+      const responseData = await UserGroup.findOne({
+        where: { groupId: groupId, userId: userId },
       });
+      if (responseData) {
+        return res.status(200).json({
+          responseMessage: "user are admin",
+          success: true,
+          isAdmin: responseData.isAdmin,
+        });
+      }
+    }else{
+      return res.status(400).json({
+        responseMessage:"bad request"
+      })
     }
-    console.log("heyyy", userId, groupId);
+    
+    
   } catch (error) {
     res.status(500).json({
       responseMessage: "Internal server issue",
@@ -356,14 +383,16 @@ exports.removeMember = async (req, res, next) => {
 
 exports.exitGroup = async (req, res, next) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.user;
     const groupId = req.query.groupId;
+    console.log("group",groupId);
     const deletedGroup = await UserGroup.destroy({
       where: {
         userId: userId,
         groupId: groupId,
       },
     });
+    console.log(deletedGroup);
     if (deletedGroup) {
       res.status(200).json({
         responseMessage: "Successfully exited from group",
@@ -380,30 +409,3 @@ exports.exitGroup = async (req, res, next) => {
   }
 };
 
-// dumping zone
-
-// const userGroupData = await UserGroup.findAll({
-//   where: {
-//     groupId: groupId,
-//     isAdmin: true,
-//   },
-//   attributes: ["userId"],
-// });
-
-// // Extract user IDs from the userGroupData
-// const userIds = userGroupData.map((userGroup) => userGroup.userId);
-
-// // Now you have the user IDs, you can use them to fetch user details from the User table
-// const users = await User.findAll({ where: { id: userIds } });
-// console.log("heyuu", users);
-
-// for profile
-
-// const usersWithGroups = await User.findAll({
-//   include: [
-//     {
-//       model: Group,
-//       through: UserGroup // Specify the junction table for the many-to-many relationship
-//     }
-//   ]
-// });

@@ -8,18 +8,82 @@ let memberUserId = null;
 let userId = null;
 let groupName = "";
 
+//tools
+function screenResize() {
+  const width = window.innerWidth;
+  if (width < 576) {
+    if (groupId === null) {
+      console.log("hoja");
+      // document.querySelector(".left-part").style.width = "20%";
+      document.querySelector(".left-part").style.maxWidth = "100%";
+      document.querySelector(".right-part").style.display = "none";
+      document.querySelector(".back").style.display = "block";
+    } else {
+      console.log("aagya");
+      document.querySelector(".back").style.display = "block";
+
+      document.querySelector(".right-part").style.display = "block";
+
+      document.querySelector(".left-part").style.display = "none";
+    }
+  } else {
+    document.querySelector(".back").style.display = "none";
+    document.querySelector(".left-part").style.maxWidth = "300px";
+    document.querySelector(".left-part").style.display = "block";
+    document.querySelector(".right-part").style.display = "block";
+  }
+}
+window.addEventListener("resize", screenResize);
+
+document.querySelector(".back").addEventListener("click", async () => {
+  // groupId=null
+  document.querySelector(".left-part").style.maxWidth = "100%";
+  document.querySelector(".right-part").style.display = "none";
+  document.querySelector(".left-part").style.display = "block";
+
+  await fetchingAllGroup();
+});
+
+function errorHandling(error){
+  if(error.response.status === 400){
+    alert(error.response.data.responseMessage)
+  }else if(error.response.status === 401){
+    alert(error.response.data.responseMessage)
+    window.location.href = "../Login/login.html"
+  }else if(error.response.status === 403){
+    alert(error.response.data.responseMessage)
+    window.location.href = "../Login/login.html"
+  }else if(error.response.status === 404){
+    alert(error.response.data.responseMessage)
+  }else if(error.response.status===409){
+    alert(error.response.data.responseMessage)
+  }else if(error.response.status===500){
+    alert(error.response.data.responseMessage)
+  }else{
+    console.log(error);
+  }
+}
+
+document.getElementById("logout").addEventListener("click", ()=>{
+  localStorage.clear("token");
+  // window.location.href = "../Login/login.html";
+  window.location.href = "../Homepage/homepage.html"
+
+})
+
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    screenResize()
+    screenResize();
     if (groupId === null) {
       document.querySelector(".right-part-wrapper1").style.display = "none";
       document.querySelector(".right-part-wrapper2").style.display = "flex";
     }
     await fetchingAllGroup();
   } catch (error) {
-    console.log("yaha bhi");
     console.log(error);
-    // window.location.href = "../Login/login.html";
+    errorHandling(error)
   }
 });
 
@@ -50,11 +114,14 @@ async function fetchingAllGroup() {
       });
     }
   } catch (error) {
-    console.log(error);
-    // window.location.href = "../Login/login.html"
+    errorHandling(error)
   }
 }
 
+
+
+
+// ------------------------ hamburger-left-slider -----------------------
 document
   .getElementById("hamburgerToOpen")
   .addEventListener("click", async () => {
@@ -79,7 +146,11 @@ async function fetchingUserDetails() {
       showUserDetails(responseData.data.userDetails);
     }
   } catch (error) {
-    console.log(error);
+    if(error.response.status===500){
+      alert(error.response.data.responseMessage)
+    }else{
+      console.log(error);
+    }
   }
 }
 function showUserDetails(userDetails) {
@@ -88,60 +159,41 @@ function showUserDetails(userDetails) {
   document.querySelector(".userDetailEmail").innerText = userDetails.email;
 }
 
+// --------------------------------------------------------------------------
+
+
+
+// ------------------------------- socket implementation -----------------------
+socket.on("message-received", async (msg) => {
+  console.log(msg);
+  await fetchingAllMessage();
+});
+
+socket.on("member-added", async (member) => {
+  console.log("active");
+  await fetchingAllGroup();
+});
+
+
+
+
+
+
+
 //openGroupPage ->
 // 1. chat header
 // 2. fetching all message
 
 async function openGroupPage(event) {
   try {
-
     showChatHeader(event);
     screenResize();
-
     await fetchingAllMessage();
   } catch (error) {
     console.log(error);
+    errorHandling(error)
   }
 }
-
-function screenResize() {
-  const width = window.innerWidth;
-  // console.log(width);
-  if (width < 576) {
-    if (groupId === null) {
-      console.log("hoja");
-      // document.querySelector(".left-part").style.width = "20%";
-      document.querySelector(".left-part").style.maxWidth = "100%";
-      document.querySelector(".right-part").style.display = "none";
-    document.querySelector(".back").style.display="block"
-
-    }else{
-      console.log("aagya");
-    document.querySelector(".back").style.display="block"
-
-      document.querySelector(".right-part").style.display = "block";
-
-      document.querySelector(".left-part").style.display = "none";
-    }
-  } else {
-    // document.querySelector(".left-part").style.maxWidth = "100%";
-    document.querySelector(".back").style.display="none"
-    document.querySelector(".left-part").style.maxWidth = "300px";
-    document.querySelector(".left-part").style.display = "block";
-    document.querySelector(".right-part").style.display = "block";
-  }
-}
-
-window.addEventListener("resize", screenResize);
-
-document.querySelector(".back").addEventListener("click", async()=>{
-  // groupId=null
-  document.querySelector(".left-part").style.maxWidth = "100%";
-  document.querySelector(".right-part").style.display = "none";
-  document.querySelector(".left-part").style.display = "block";
-
-  await fetchingAllGroup();
-})
 
 function showChatHeader(event) {
   document.querySelector(".right-part-wrapper1").style.display = "block";
@@ -157,11 +209,6 @@ function showChatHeader(event) {
   const chatHeader = document.querySelector(".chatHeader-GroupName");
   chatHeader.innerText = event.target.innerText;
 }
-
-socket.on("message-received", async (msg) => {
-  console.log(msg);
-  await fetchingAllMessage();
-});
 
 async function fetchingAllMessage() {
   try {
@@ -185,13 +232,14 @@ async function fetchingAllMessage() {
           },
         }
       );
-
+      if(responseData.status === 200){
       showChat(responseData.data.responseData);
+        console.log("respo", responseData);
+      }
     }
   } catch (error) {
-    console.log("yha aarha hai");
     console.log(error);
-    // window.location.href = "../Login/login.html";
+    errorHandling(error);
   }
 }
 
@@ -225,10 +273,22 @@ function showChat(msg) {
 
     const msgUserMsg = document.createElement("div");
     msgUserMsg.classList.add("msg-user-msg");
-    const p2 = document.createElement("p");
+    if(userMsg.contentType === "text"){
+      const p2 = document.createElement("p");
     p2.classList.add("user-msg");
-    p2.innerText = `${userMsg.message}`;
+    p2.innerText = `${userMsg.content}`;
     msgUserMsg.append(p2);
+    }else{
+      const imageUrl = document.createElement("img");
+      imageUrl.classList.add("user-img");
+      imageUrl.setAttribute("src", `${userMsg.content}`);
+      imageUrl.setAttribute("alt", "userimageMedia")
+      msgUserMsg.append(imageUrl)
+    }
+    // const p2 = document.createElement("p");
+    // p2.classList.add("user-msg");
+    // p2.innerText = `${userMsg.content}`;
+    // msgUserMsg.append(p2);
 
     const msgTimeBox = document.createElement("div");
     msgTimeBox.classList.add("msg-time-box");
@@ -248,28 +308,68 @@ function showChat(msg) {
   });
 }
 
+
+function updateFileName() {
+  const fileInput = document.getElementById("fileInput");
+  const selectedFileName = document.getElementById("selectedFileName");
+  console.log(selectedFileName);
+  if (fileInput.files.length > 0) {
+    document.getElementById("chatMsg").style.display = "none";
+    selectedFileName.textContent = `${fileInput.files[0].name.slice(
+      0,
+      20
+    )} ...`;
+    selectedFileName.style.display = "flex";
+  } else {
+    document.getElementById("chatMsg").style.display = "block";
+    selectedFileName.textContent = "";
+    selectedFileName.style.display = "none";
+  }
+}
+
+document
+  .querySelector(".deleteButton")
+  .addEventListener("click", clearFormImage);
+function clearFormImage() {
+  const fileInput = document.getElementById("fileInput");
+  const selectedFileName = document.getElementById("selectedFileName");
+  if (fileInput.files.length > 0) {
+    fileInput.value = "";
+    selectedFileName.textContent = "";
+    selectedFileName.style.display = "none";
+    document.getElementById("chatMsg").style.display = "block";
+  }
+}
+
 async function chatFormHandler(event) {
   try {
     event.preventDefault();
+    const uploadFile = document.getElementById("fileInput");
+    console.log("uploadFile", uploadFile.files[0]);
+    let formData = new FormData();
+    formData.append("file", uploadFile.files[0]);
+    formData.append("chatMsg", event.target.chatMsg.value);
 
     const msg = {
       message: event.target.chatMsg.value,
     };
-    console.log(msg);
-    if (msg.message) {
+    if (msg.message || uploadFile) {
       const token = localStorage.getItem("token");
+      console.log(token);
       const responseData = await axios.post(
         `http://3.7.252.73:3000/chat/postChat/${groupId}`,
-        JSON.stringify(msg),
+        formData,
         {
           headers: {
             Authorization: token,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
+      
       if (responseData.status === 200) {
         document.getElementById("chatMsg").value = "";
+        clearFormImage();
         console.log(responseData.data.message);
         socket.emit("front-message", responseData.data.message);
         await fetchingAllMessage();
@@ -279,12 +379,51 @@ async function chatFormHandler(event) {
     }
   } catch (error) {
     console.log(error);
+    errorHandling(error)
   }
 }
 
 // document
 //   .getElementById("chatHeaderProfileOpen")
 //   .addEventListener("click", chatGroupInfo);
+document
+  .getElementById("more-option-trigger")
+  .addEventListener("click", showAddMemberOption);
+async function showAddMemberOption() {
+  try {
+    const isAdmin = await checkYouAreAdmin();
+    if (isAdmin) {
+      document.getElementById("addMember").style.display = "flex";
+    } else {
+      document.getElementById("addMember").style.display = "none";
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function checkYouAreAdmin() {
+  try {
+    const token = localStorage.getItem("token");
+    const responseData = await axios.get(
+      `http://3.7.252.73:3000/chat/checkYouAreAdmin/${groupId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    console.log(responseData);
+    if (responseData.status === 200) {
+      return responseData.data.isAdmin;
+    }
+  } catch (error) {
+    console.log(error);
+    errorHandling(error)
+  }
+}
+
+document.getElementById("groupInfo").addEventListener("click", chatGroupInfo);
 async function chatGroupInfo(e) {
   try {
     // e.stopPropagation();
@@ -304,47 +443,9 @@ async function chatGroupInfo(e) {
     showGroupInfo(responseData.data.groupInfo);
   } catch (error) {
     console.log(error);
+    errorHandling(error);
   }
 }
-async function checkYouAreAdmin() {
-  try {
-    const token = localStorage.getItem("token");
-    const responseData = await axios.get(
-      `http://3.7.252.73:3000/chat/checkYouAreAdmin/${groupId}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-    console.log(responseData);
-    if (responseData.status === 200) {
-      return responseData.data.isAdmin;
-    }
-  } catch (error) {
-    console.log(error);
-    if (error.response.status === 500) {
-      alert(error.response.data.responseMessage);
-    }
-  }
-}
-document
-  .getElementById("more-option-trigger")
-  .addEventListener("click", showAddMemberOption);
-async function showAddMemberOption() {
-  try {
-    const isAdmin = await checkYouAreAdmin();
-    if (isAdmin) {
-      document.getElementById("addMember").style.display = "flex";
-    } else {
-      document.getElementById("addMember").style.display = "none";
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-document.getElementById("groupInfo").addEventListener("click", chatGroupInfo);
 function showGroupInfo(groupInfo) {
   const groupNameHeader = document.getElementById("groupNameHeader");
   const groupMemberCount = document.getElementById("groupMemberCount");
@@ -388,11 +489,6 @@ function showGroupInfo(groupInfo) {
   });
 }
 
-socket.on("member-added", async (member) => {
-  console.log("active");
-  await fetchingAllGroup();
-});
-
 async function addUserHandler(event) {
   try {
     event.preventDefault();
@@ -416,11 +512,12 @@ async function addUserHandler(event) {
     );
     console.log("adddd", responseData);
     if (responseData.status === 200) {
-      console.log("hlwwww");
       socket.emit("add-member-notification", "member");
+      alert(responseData.data.responseMessage)
     }
   } catch (error) {
     console.log(error);
+    errorHandling(error)
   }
 }
 
@@ -432,9 +529,10 @@ document.getElementById("leaveGroupPopup").addEventListener("click", () => {
 
 document.getElementById("exitGroup").addEventListener("click", async () => {
   try {
+    console.log(userId);
     const token = localStorage.getItem("token");
     const responseData = await axios.delete(
-      `http://3.7.252.73:3000/chat/showGroup/exit-group/${userId}?groupId=${groupId}`,
+      `http://3.7.252.73:3000/chat/showGroup/exit-group?groupId=${groupId}`,
       {
         headers: {
           Authorization: token,
@@ -443,10 +541,11 @@ document.getElementById("exitGroup").addEventListener("click", async () => {
     );
     console.log(responseData);
     if (responseData.status === 200) {
-      await fetchingAllGroup();
+      window.location.href = "../Homepage/homepage.html"
     }
   } catch (error) {
     console.log(error);
+    errorHandling(error)
   }
 });
 

@@ -9,10 +9,14 @@ const Chat = sequelize.define("chat",{
         allowNull:false,
         primaryKey:true
     },
-    message:{
-        type:Sequelize.STRING,
-        allowNull:false
+    contentType: {
+        type: Sequelize.ENUM('text', 'image'),
+        allowNull: false
     },
+    content: {
+        type: Sequelize.STRING, // or DataTypes.TEXT if content may be longer
+        allowNull: false
+    }
 })
 
 module.exports = Chat;

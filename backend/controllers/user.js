@@ -16,14 +16,14 @@ exports.postSignup = async (req, res, next) => {
         } else {
           User.create({ ...req.body, password: hash });
           res.status(200).json({
-            reponseMessage: "User created successfully",
+            responseMessage: "User created successfully",
             success: true,
           });
         }
       });
     } else {
       res.status(404).json({
-        reponseMessage: "Email already exist",
+        responseMessage: "Email already exist",
         success: false,
       });
     }
@@ -46,18 +46,18 @@ exports.postLogin = async (req, res, next) => {
         (err, result) => {
           console.log(result);
           if (err) {
-            res.status.json({
-              reponseMessage: "internal server problem",
+            return res.status.json({
+              responseMessage: "internal server problem",
             });
           } else {
             if (result) {
               const token = genrateToken(existingUser.id);
-              res.status(200).json({
-                reponseMessage: "login successful",
+              return res.status(200).json({
+                responseMessage: "login successful",
                 token: token,
               });
             } else {
-              res.status(401).json({
+              return res.status(401).json({
                 responseMessage: "password is incorrect",
                 success: false,
               });
@@ -66,13 +66,13 @@ exports.postLogin = async (req, res, next) => {
         }
       );
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         responseMessage: "Email not found",
         success: false,
       });
     }
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       responseMessage: "internal server problem",
     });
   }
@@ -81,9 +81,7 @@ exports.postLogin = async (req, res, next) => {
 exports.getUserDetails = async (req, res, next) => {
   try {
     const userId = req.user;
-
     const userData = await User.findByPk(userId);
-   
     if(userData){
       const userDetails = {
         name:userData.name,
@@ -91,13 +89,13 @@ exports.getUserDetails = async (req, res, next) => {
         userId:userId
       }
       res.status(200).json({
-        reponseMessage:"successfully get user detail",
+        responseMessage:"successfully get user detail",
         userDetails:userDetails
       })
     }
   } catch (error) {
     return res.status(500).json({
-      reponseMessage: "Internal server issue",
+      responseMessage: "Internal server issue",
     });
   }
 };

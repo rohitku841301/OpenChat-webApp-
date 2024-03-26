@@ -1,15 +1,12 @@
 async function loginFormHandler(event) {
   try {
     event.preventDefault();
-    console.log("sdkj");
     let formValidation = true;     
     const loginFormData = {
       email: event.target.email.value,
       password: event.target.password.value,
     };
     formValidation = loginValidationHandler(loginFormData);
-    console.log(".....");
-
     if (formValidation) {
       const responseData = await axios.post(
         "http://3.7.252.73:3000/user/login",
@@ -21,18 +18,21 @@ async function loginFormHandler(event) {
         }
       );
       if (responseData.status === 200) {
-        console.log(responseData);
-        const msg = responseData.data.reponseMessage;
+        const msg = responseData.data.responseMessage;
         localStorage.setItem("token", responseData.data.token);
         alert(msg);
         window.location.href = "../Homepage/homepage.html";
       }
     }
   } catch (error) {
-    if (error.response.status === 404) {
-      alert(error.response.data.reponseMessage);
-    } else if (error.response.status === 500) {
-      alert(error.response.data.reponseMessage);
+    console.log(error);
+    if (error.response.status === 401) {
+      alert(error.response.data.responseMessage);
+    }else if(error.response.status=== 404) {
+      alert(error.response.data.responseMessage);
+    }
+    else if (error.response.status === 500) {
+      alert(error.response.data.responseMessage);
     } else {
       console.log(error);
     }
